@@ -1,0 +1,154 @@
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Чердачок — Приятная Озвучка (Сергей Васильев)</title>
+  <link rel="stylesheet" href="./styles.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/wavesurfer.js@7"></script>
+</head>
+<body>
+  <header class="Layout__header Header AlwaysDark">
+    <div class="container">
+      <nav class="MainMenu">
+        <ul class="MainMenu__list">
+          <li class="MainMenu__listItem"><a href="./voices">Мои голоса</a></li>
+          <li class="MainMenu__listItem"><a href="./projects">Озвучки</a></li>
+          <li class="MainMenu__listItem"><a href="./pricing">Расценки</a></li>
+        </ul>
+      </nav>
+
+      <div class="Header__title">Чердачок</div>
+      <div class="Header__subtitle">
+        <p>Привет, меня зовут Сергей Васильев, я профессиональный диктор.</p>
+        <p>В качестве хобби занимаюсь озвучкой книг.</p>
+      </div>
+      <a href="./order" class="Button Button--cta">Заказать озвучку</a>
+
+      <ul class="Header__social">
+        <li class="Header__socialItem">
+          <a target="_blank" title="YouTube" class="Header__socialLink" href="https://www.youtube.com/c/Cherdachok"><img height="48" class="Header__socialImg" src="./assets/youtube.svg" /></a>
+        </li>
+        <li class="Header__socialItem">
+          <a target="_blank" title="Telegram" class="Header__socialLink" href="https://t.me/cherdachok_ozvuchka"><img height="42" class="Header__socialImg" src="./assets/telegram.svg" /></a>
+        </li>
+        <li class="Header__socialItem">
+          <a target="_blank" title="Вконтакте" class="Header__socialLink" href="https://vk.com/4rd4k"><img height="42" class="Header__socialImg" src="./assets/vk.svg" /></a>
+        </li>
+        <li class="Header__socialItem">
+          <a target="_blank" title="Boosty" class="Header__socialLink" href="https://boosty.to/cherdachok"><img height="42" class="Header__socialImg" src="./assets/boosty.svg" /></a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="Layout__main">
+    <div class="container">
+      <h1>Мои голоса</h1>
+
+      <div class="Filter">
+        <div class="ButtonGroup">
+          <label class="ButtonGroup__button">
+            <input type="checkbox" style="display:none" value="Мужской" />
+            Мужской
+          </label>
+          <label class="ButtonGroup__button">
+            <input type="checkbox" style="display:none" value="Женский" />
+            Женский
+          </label>
+        </div>
+      </div>
+
+      <div id="voice1" class="Voice">
+        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
+        <div class="Voice__right">
+          <div class="Voice__wave" id="voice1-wave"></div>
+          <div class="Voice__tags" id="voice1-tags">#мужской #грубый</div>
+        </div>
+      </div>
+      <div id="voice2" class="Voice">
+        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
+        <div class="Voice__right">
+          <div class="Voice__wave" id="voice2-wave"></div>
+          <div class="Voice__tags"></div>
+        </div>
+      </div>
+      <div id="voice3" class="Voice">
+        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
+        <div class="Voice__right">
+          <div class="Voice__wave" id="voice3-wave"></div>
+          <div class="Voice__tags"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="Layout__footer AlwaysDark">
+    <div class="container">
+      <p>Все материалы сайта принадлежат автору (Сергей Васильев)</p>
+      <p>Любое использование материалов сайта (изображения, звуки), в любых целях, в том числе для обучения ИИ, без согласия автора — <strong>запрещено</strong>.</p>
+      <p><a href="mailto:ser.vas.biz@mail.ru">ser.vas.biz@mail.ru</a></p>
+    </div>
+  </footer>
+  <script>
+    (function() {
+      const voices = [
+        {
+          id: '#voice1', 
+          src: './assets/voice1.mp3',
+          tags: ['Женский', 'Надменный'],
+        },
+        {
+          id: '#voice2', 
+          src: './assets/voice2.mp3',
+          tags: ['Мужской', 'Надменный'],
+        },
+        {
+          id: '#voice3', 
+          src: './assets/voice3.mp3',
+          tags: ['Женский', 'Старческий'],
+        },
+      ];
+
+      const cb = document.querySelectorAll('.Filter input[type=checkbox]')
+      const tags = new Set( voices.map(v => v.tags).flat() );
+      const fixTags = new Set( Array.from(cb).map(i => i.value) );
+      console.log('tags', tags.difference(fixTags)) // TODO: Add filters
+
+
+      voices.forEach((voice) => {
+        const wavesurfer = WaveSurfer.create({
+          container: `${voice.id}-wave`,
+          url: voice.src,
+          // misc
+          autoplay: false,
+          height: 32,
+          normalize: true,
+          cursorWidth: 0,
+          // colors
+          waveColor: '#939393',
+          progressColor: '#e39d26',
+          // bars
+          barWidth: 3,
+          barGap: 3,
+          barRadius: 50,
+          barHeight: 1,
+        })
+        const btnPlay = document.querySelector(`${voice.id} button`);
+        btnPlay.addEventListener('click', () => {
+          wavesurfer.playPause();
+          btnPlay.classList.toggle('play')
+        });
+        wavesurfer.on('finish', () => {
+          btnPlay.classList.remove('play');
+        });
+        const tags = document.querySelector(`${voice.id} .Voice__tags`);
+        tags.textContent = voice.tags.map(s => `#${s}`).join(' ')
+      })
+    })();
+    
+  </script>
+</body>
+</html>

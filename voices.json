@@ -1,0 +1,12 @@
+[
+  {
+    "id": "#voice1",
+    "src": "./assets/voice1.mp3",
+    "tags": ["Женский", "Надменный"]
+  },
+  {
+    "id": "#voice2",
+    "src": "./assets/voice2.mp3",
+    "tags": ["Мужской", "Надменный"]
+  }
+]
