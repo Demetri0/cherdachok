@@ -135,6 +135,20 @@ a {
   border: 1px solid var(--color-outline);
   border-radius: 8px;
   padding: 4px;
+  margin-bottom: 4px; 
+
+  @media (max-width: 420px) {
+    & {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  @media (max-width: 640px) and (min-width: 421px) {
+    & {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 }
 
 .ButtonGroup__button {
@@ -149,6 +163,18 @@ a {
   background: var(--color-primary-main);
 }
 
+  .ButtonGroup {
+/*
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+*/
+  }
+}
+@media (max-width: 420px) {
+  .ButtonGroup {
+  }
+}
 /* [Player] */
 
 .Voice {
