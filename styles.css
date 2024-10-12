@@ -163,19 +163,13 @@ a {
   background: var(--color-primary-main);
 }
 
-  .ButtonGroup {
-/*
-    width: 100%;
-    flex-wrap: wrap;
-    flex-direction: column;
-*/
-  }
-}
-@media (max-width: 420px) {
-  .ButtonGroup {
-  }
-}
 /* [Player] */
+
+.VoicesList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
 .Voice {
   display: flex;

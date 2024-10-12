@@ -112,27 +112,7 @@
         </div>
       </div>
 
-      <div id="voice1" class="Voice">
-        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
-        <div class="Voice__right">
-          <div class="Voice__wave" id="voice1-wave"></div>
-          <div class="Voice__tags" id="voice1-tags">#мужской #грубый</div>
-        </div>
-      </div>
-      <div id="voice2" class="Voice">
-        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
-        <div class="Voice__right">
-          <div class="Voice__wave" id="voice2-wave"></div>
-          <div class="Voice__tags"></div>
-        </div>
-      </div>
-      <div id="voice3" class="Voice">
-        <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
-        <div class="Voice__right">
-          <div class="Voice__wave" id="voice3-wave"></div>
-          <div class="Voice__tags"></div>
-        </div>
-      </div>
+      <ul id="voices-list" class="VoicesList"></ul>
     </div>
   </main>
 
@@ -144,34 +124,10 @@
     </div>
   </footer>
   <script>
-    (function() {
-      const voices = [
-        {
-          id: '#voice1', 
-          src: './assets/voice1.mp3',
-          tags: ['Женский', 'Надменный'],
-        },
-        {
-          id: '#voice2', 
-          src: './assets/voice2.mp3',
-          tags: ['Мужской', 'Надменный'],
-        },
-        {
-          id: '#voice3', 
-          src: './assets/voice3.mp3',
-          tags: ['Женский', 'Старческий'],
-        },
-      ];
-
-      const cb = document.querySelectorAll('.Filter input[type=checkbox]')
-      const tags = new Set( voices.map(v => v.tags).flat() );
-      const fixTags = new Set( Array.from(cb).map(i => i.value) );
-      console.log('tags', tags.difference(fixTags)) // TODO: Add filters
-
-
-      voices.forEach((voice) => {
+    (async function() {
+      function assignWave(voice, container = document) {
         const wavesurfer = WaveSurfer.create({
-          container: `${voice.id}-wave`,
+          container: `#${voice.id}-wave`,
           url: voice.src,
           // misc
           autoplay: false,
@@ -187,7 +143,7 @@
           barRadius: 50,
           barHeight: 1,
         })
-        const btnPlay = document.querySelector(`${voice.id} button`);
+        const btnPlay = document.querySelector(`#${voice.id} button`, container);
         btnPlay.addEventListener('click', () => {
           wavesurfer.playPause();
           btnPlay.classList.toggle('play')
@@ -195,11 +151,61 @@
         wavesurfer.on('finish', () => {
           btnPlay.classList.remove('play');
         });
-        const tags = document.querySelector(`${voice.id} .Voice__tags`);
-        tags.textContent = voice.tags.map(s => `#${s}`).join(' ')
+      }
+
+      function renderVoice(voice) {
+        return `
+          <div id="${voice.id}" class="Voice">
+            <button aria-label="Play/Pause" class="Voice__playBtn BtnPlay"></button>
+            <div class="Voice__right">
+              <div class="Voice__wave" id="${voice.id}-wave"></div>
+              <div class="Voice__tags">[${voice.id}] ${voice.tags.join()}</div>
+            </div>
+          </div>
+        `
+      }
+
+      function renderVoices(voices) {
+	const $slot = document.getElementById('voices-list');
+        
+        $slot.innerHTML = '';
+
+        voices.forEach((voice) => {
+          const html = renderVoice(voice);
+          const $li = document.createElement('li');
+          $li.innerHTML = html;
+          $slot.appendChild($li);
+
+          assignWave(voice);
+        });
+      }
+
+      function reRenderVoices(voices) {
+        const $checkedFilters = document.querySelectorAll('.Filter input[type=checkbox]:checked');
+        const enabledTags = Array.from($checkedFilters).map(i => i.value);
+
+        const filteredVoices = voices.filter(v => enabledTags.length == 0 || v.tags.some(t => enabledTags.includes(t)));
+
+        renderVoices(filteredVoices);
+      }
+
+      function addFilters() {
+        const cb = document.querySelectorAll('.Filter input[type=checkbox]')
+        const tags = new Set( voices.map(v => v.tags).flat() );
+        const fixTags = new Set( Array.from(cb).map(i => i.value) );
+        console.log('tags', tags.difference(fixTags)) // TODO: Add filters
+      }
+ 
+      const voices = await fetch('./voices.json').then(d => d.json());
+      reRenderVoices(voices);
+
+      const $cbList = document.querySelectorAll('.Filter input[type=checkbox]')
+      $cbList.forEach(($checkbox) => {
+        $checkbox.addEventListener('change',() => {
+          reRenderVoices(voices)
+        });
       })
     })();
-    
   </script>
 </body>
 </html>
